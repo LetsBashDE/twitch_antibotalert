@@ -33,6 +33,9 @@ Since we made a huge change to our code you may don´t need any of this, but jus
 - Setup your Alertbox with a delay of 5 seconds
   - On Streamlabs you can change this on the website for every alert
 
+# A new Bot is going on my nerves!
+If a simelar Bot to Hoss is back in town then you can add regular expressions to hide that alerts. Edit the process.ps1 and look for "$pattern      += ".*(0|o|O)312.*"            # Regular expression of a bad follower". Just copy that line and define a new regular expression in the brackets ".*(0|o|O)312.*". Normaly regular expressions start and end with a slash, but in powershell this is not the case. If you would like to test your expressions then head to http://regex101.com
+
 # When it failes or start fresh
 If something goes wrong you can delete the channel.txt, clientid.txt and token.txt files that will be placed in the same directory as init.cmd and process.ps1.
 
