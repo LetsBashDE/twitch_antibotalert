@@ -52,4 +52,4 @@ This script does not come with any warranty and will be provided as it is.
 Nope - Everything regarding processing and authentication will be handeld between your computer and twitch. But you should not store the script on a public folder.
 
 # Special thanks
-Thanks to AlphaDuplo for creating https://twitchinsights.net/
+Thanks to https://www.twitch.tv/alphaduplo for creating https://twitchinsights.net/
