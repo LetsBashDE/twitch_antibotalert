@@ -37,7 +37,7 @@ Since we made a huge change to our code you may don´t need any of this, but jus
 If a simelar Bot to Hoss is back in town then you can add regular expressions to hide that alerts. Edit the process.ps1 and look for <code>$pattern      += ".*(0|o|O)312.*"            # Regular expression of a bad follower</code>. Just copy that line and define a new regular expression in the brackets <code>".*(0|o|O)312.*"</code>. Normaly regular expressions start and end with a slash, but in powershell this is not the case. If you would like to test your expressions then head to http://regex101.com
 
 # When it failes or start fresh
-If something goes wrong you can delete the channel.txt, clientid.txt and token.txt files that will be placed in the same directory as init.cmd and process.ps1.
+If something goes wrong you can delete the *.txt files that will be placed in the same directory as init.cmd and process.ps1.
 
 # Things you should not do
 You must not run this as an Administrator because of the path "execute at folder" definition of windows. Programms that will be run as Administrator starts usualy at %winwir%\system32. If you realy want this script to run as an administrator then edit the init.cmd and delete the line 5 "goto execute". Then execute the init.cmd normaly and it will evelate itself into the administrative executionlayer.
