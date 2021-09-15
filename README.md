@@ -37,7 +37,7 @@ Since we made a huge change to our code you may don´t need any of this, but jus
 If something goes wrong you can delete the channel.txt, clientid.txt and token.txt files that will be placed in the same directory as init.cmd and process.ps1.
 
 # Things you should not do
-You must not run this as an Administrator because of the path "execute at folder" definition of windows. Programms that will be run as Administrator starts usualy at %winwir%\system32.
+You must not run this as an Administrator because of the path "execute at folder" definition of windows. Programms that will be run as Administrator starts usualy at %winwir%\system32. If you realy want this script to run as an administrator then edit the init.cmd and delete the line 5 "goto execute". Then execute the switch normaly and it will evelate itself into the administrative executionlayer.
 
 # License
 You are free to use this code and modify it by your own, but a credit to LetsBash.de must be included.
