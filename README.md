@@ -6,7 +6,7 @@ So I decided to extend the script to a better generic "Anti Bot Alert" system th
 Of course, it's Powershell - so it only works with Windows and I have no plans to port this script.
 
 # Videos
-There Videos are originaly from "twitch_hossa" but it works exactly the same for your.
+There Videos are originaly from "twitch_hossa" but it works exactly the same.
 - German: https://www.youtube.com/watch?v=tfht5v6GYQc
 - English: https://www.youtube.com/watch?v=WbfpptzvEuo
 
