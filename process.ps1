@@ -8,15 +8,13 @@
 
 
 # User vars - Can be edited by YOU
-$release       = 40                          # Seconds to press the hotkey again
-$webserverport = "8085"                      # Local port for temporarly webserver (must match with OAuth Redirect URL - eg. http://127.0.0.1:8084)
-$webserverwait = 120                         # Seconds; How long should the webserver listen for an oauth request
-$interval      = 2                           # Time between requests to twitch for checking the lastest follower
-$filterbots    = 10                          # Bots must be active in the last x days
-$pattern       = @()                         # Do not modify
-$pattern      += ".*(h|H)(o|O)(s|S)(s|S).*"  # Regular expression of a bad follower
-$pattern      += ".*(0|o|O)312.*"            # Regular expression of a bad follower
-$pattern      += ".*(h|o|s|8|0|1|2).*(h|o|s|8|0|1|2).*(h|o|s|8|0|1|2).*(h|o|s|8|0|1|2).*(h|o|s|8|0|1|2).*(h|o|s|8|0|1|2).*(h|o|s|8|0|1|2).*(h|o|s|8|0|1|2).*"            # Regular expression of a bad follower
+$release       = 40                            # Seconds to press the hotkey again
+$webserverport = "8085"                        # Local port for temporarly webserver (must match with OAuth Redirect URL - eg. http://127.0.0.1:8084)
+$webserverwait = 120                           # Seconds; How long should the webserver listen for an oauth request
+$interval      = 2                             # Time between requests to twitch for checking the lastest follower
+$filterbots    = 10                            # Bots must be active in the last x days
+$pattern       = @()                           # Do not modify
+$pattern      += ".*(H|h)(o|0|O).*(s|S){2}.*"  # Regular expression of a bad follower
 
 
 # Runtime vars - Modified by the process - Should you NOT edit
