@@ -34,7 +34,7 @@ Since we made a huge change to our code you may don´t need any of this, but jus
   - On Streamlabs you can change this on the website for every alert
 
 # A new Bot is going on my nerves!
-If a simelar Bot to Hoss is back in town then you can add regular expressions to hide that alerts. Edit the process.ps1 and look for <code>$pattern      += ".*(0|o|O)312.*"            # Regular expression of a bad follower</code>. Just copy that line and define a new regular expression in the brackets <code>".*(0|o|O)312.*"</code>. Normaly regular expressions start and end with a slash, but in powershell this is not the case. If you would like to test your expressions then head to http://regex101.com
+If a simelar Bot to Hoss is back in town then you can add regular expressions to hide that alerts. Edit the process.ps1 and look for <code>$pattern      += ".*(H|h)(o|0|O).*(s|S){2}.*"            # Regular expression of a bad follower</code>. Just copy that line and define a new regular expression in the brackets <code>".*(H|h)(o|0|O).*(s|S){2}.*"</code>. Normaly regular expressions start and end with a slash, but in powershell this is not the case. If you would like to test your expressions then head to http://regex101.com
 
 # When it failes or start fresh
 If something goes wrong you can delete the *.txt files that will be placed in the same directory as init.cmd and process.ps1.
