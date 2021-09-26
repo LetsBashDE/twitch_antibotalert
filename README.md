@@ -1,5 +1,5 @@
 # Whats is this
-Some time ago the bot Hoss* started to get on my nerves.
+Some time ago the bot Hoss00312 started to get on my nerves.
 So I created a simple powershell script "twich_hossa" that works with the Twitch Helix API.
 But a week later Hoss00312 disappeared from Twitch and was never seen again. 
 So I decided to extend the script to a better generic "Anti Bot Alert" system that dynamically captures all known bots from twitchinsights.net that were active in the last 10 days.
