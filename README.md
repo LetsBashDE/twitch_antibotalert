@@ -1,4 +1,7 @@
-# Whats is this
+# What is this
+The small powershell script connects to your Twitch account and constantly checks your last follower and additionally your follower count. The last follower is always compared with the bot database of Twitchinsights.net and in case of a bot or alternatively a mass-follow a hotkey is pressed automatically. With the hotkey you can for example temporarily disable the alert box in your OBS, TwitchStudio or StreamlabsOBS. By default, the hotkey is pressed twice with an interval of 40 seconds, if a bot or a mass-follow was detected. A mass-follow is detected by default when 5 followers have been reported within 3 minutes. The behavior can be customized in the powershell script header. In addition to Twitchinsights.net, experienced users can add definitions in the "Regex" script for Twitch users who should also be counted as a bot.
+
+# A small history about the origin
 Some time ago the bot Hoss00312 started to get on my nerves.
 So I created a simple powershell script "twich_hossa" that works with the Twitch Helix API.
 But a week later Hoss00312 disappeared from Twitch and was never seen again. 
