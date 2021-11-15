@@ -243,7 +243,7 @@ function show_welcome {
 
 function init_testing {
 
-    # Testing hotkeys by pressing 6 times
+    # Testing hotkeys by pressing 4 times
     write-host ""
     write-host ("Testing Hotkey...")
     for ($i = 0; $i -lt 4; $i++){
