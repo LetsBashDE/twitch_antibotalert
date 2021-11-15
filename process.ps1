@@ -8,13 +8,15 @@
 
 
 # User vars - Can be edited by YOU
-$release       = 40                            # Seconds to press the hotkey again
-$webserverport = "8085"                        # Local port for temporarly webserver (must match with OAuth Redirect URL - eg. http://127.0.0.1:8085)
-$webserverwait = 120                           # Seconds; How long should the webserver listen for an oauth request
-$interval      = 2                             # Time between requests to twitch for checking the lastest follower
-$filterbots    = 10                            # Bots must be active in the last x days
-$pattern       = @()                           # Do not modify
-$pattern      += ".*(H|h)(o|0|O).*(s|S){2}.*"  # Regular expression of a bad follower
+$release           = 40                            # Seconds to press the hotkey again
+$webserverport     = "8085"                        # Local port for temporarly webserver (must match with OAuth Redirect URL - eg. http://127.0.0.1:8085)
+$webserverwait     = 120                           # Seconds; How long should the webserver listen for an oauth request
+$interval          = 2                             # Time between requests to twitch for checking the lastest follower
+$filterbots        = 10                            # Bots must be active in the last x days
+$pattern           = @()                           # Do not modify
+$pattern          += ".*(H|h)(o|0|O).*(s|S){2}.*"  # Regular expression of a bad follower
+$maxfollowsatonce  = 5                             # Limit max follows in the range of $maxfollowsintime minutes (eg. max 5 follows in the last 10 minutes)
+$maxfollowsintime  = 3                             # Defines the timerange in minutes for $maxfolloswatonce
 
 
 # Runtime vars - Modified by the process - Should you NOT edit
@@ -27,6 +29,7 @@ $channelid    = ""                           # Your channelid extracted by your 
 $latestfollow = ""                           # Your lastest follower on twitch
 $matchfollow  = ""                           # Compare value for change detection
 $botlist      = @()                          # Dynamic list of Botnames
+$followcounts = @{}                          # Temporary store of your follower count
 
 # Assemblies
 $codeHotkeySender = @"
@@ -216,6 +219,7 @@ function init_main {
     	write-host "." -nonewline
 	
 	# Check latest follower
+        init_cleanup_followcounts
         init_follower
         init_detector
 	
@@ -233,7 +237,7 @@ function show_welcome {
     write-host "--------------------------------------"
     write-host ""
     write-host "How it works:"
-    write-host ("This script connects to twitchinsights.net and retrives the latest known bots. After the script connects continuously to your twitch account and retrive the lastest follower. If the latest follower is somehow known as a bot then a hotkey press will be issued to hide your alertbox overlay in OBS Studio. After a delay the hotkey will be pressed again to show the alertbox as usual.")
+    write-host ("This script connects to twitchinsights.net and retrives the latest known bots. After the script connects continuously to your twitch account and retrive the lastest follower. If the latest follower is somehow known as a bot then a hotkey press will be issued to hide your alertbox overlay in OBS Studio. After a delay the hotkey will be pressed again to show the alertbox as usual. Additionally, the number of your followers is kept in mind to detect possible bot raids.")
     write-host ""
 }
 
@@ -453,14 +457,14 @@ function init_channelid {
     
     # Prepare Webrequest
     $url = ("https://api.twitch.tv/helix/users?login="+$Global:channel)
-	$webquery = New-Object -ComObject "Msxml2.ServerXMLHTTP.6.0"
+    $webquery = New-Object -ComObject "Msxml2.ServerXMLHTTP.6.0"
     $webquery.SetOption(2, 'objHTTP.GetOption(2) - SXH_SERVER_CERT_IGNORE_ALL_SERVER_ERRORS')
     $webquery.open('GET', $url, $false)
     $webquery.setRequestHeader("Authorization", ("Bearer "+$Global:token))
     $webquery.setRequestHeader("Client-Id", $Global:clientid)
-	$webquery.SetRequestHeader("Pragma", "no-cache")
-	$webquery.SetRequestHeader("Cache-Control", "no-cache")
-	$webquery.SetRequestHeader("If-Modified-Since", "Sat, 1 Jan 2000 00:00:00 GMT")
+    $webquery.SetRequestHeader("Pragma", "no-cache")
+    $webquery.SetRequestHeader("Cache-Control", "no-cache")
+    $webquery.SetRequestHeader("If-Modified-Since", "Sat, 1 Jan 2000 00:00:00 GMT")
     [long]$timeout = 2000
     $webquery.SetTimeouts($timeout,$timeout,$timeout,$timeout)
     $webquery.send()
@@ -480,18 +484,32 @@ function init_channelid {
     }
 }
 
+function init_cleanup_followcounts {
+
+    # Cleanup followercounts
+    if($Global:followcounts.count -ge 0) {
+        $limit = (((get-date -Uformat %s)-split ",")[0]) - ($Global:maxfollowsintime * 60)
+        $keys = @($Global:followcounts.keys)
+        foreach($key in $keys) {
+            if($key -le $limit) {
+                $Global:followcounts.remove($key)
+            }
+        }
+    }
+}
+
 function init_follower {
 
     # Prepare Webrequest
     $url = ("https://api.twitch.tv/helix/users/follows?to_id="+$Global:channelid)
-	$webquery = New-Object -ComObject "Msxml2.ServerXMLHTTP.6.0"
+    $webquery = New-Object -ComObject "Msxml2.ServerXMLHTTP.6.0"
     $webquery.SetOption(2, 'objHTTP.GetOption(2) - SXH_SERVER_CERT_IGNORE_ALL_SERVER_ERRORS')
     $webquery.open('GET', $url, $false)
     $webquery.setRequestHeader("Authorization", ("Bearer "+$Global:token))
     $webquery.setRequestHeader("Client-Id", $Global:clientid)
-	$webquery.SetRequestHeader("Pragma", "no-cache")
-	$webquery.SetRequestHeader("Cache-Control", "no-cache")
-	$webquery.SetRequestHeader("If-Modified-Since", "Sat, 1 Jan 2000 00:00:00 GMT")
+    $webquery.SetRequestHeader("Pragma", "no-cache")
+    $webquery.SetRequestHeader("Cache-Control", "no-cache")
+    $webquery.SetRequestHeader("If-Modified-Since", "Sat, 1 Jan 2000 00:00:00 GMT")
     [long]$timeout = 2000
     $webquery.SetTimeouts($timeout,$timeout,$timeout,$timeout)
     
@@ -500,10 +518,13 @@ function init_follower {
     	$webquery.send()
     } catch {}
     
-    # Extract latest follower
+    # Extract latest follower and follower count
     if($webquery.statusText -like "*OK*"){
         if($webquery.responseText -like ("*"+'"from_name":"'+"*")){
             $Global:latestfollow = (((($webquery.responseText) -split "from_name`":`"")[1]) -split "`"")[0]
+        }
+        if($webquery.responseText -like ("*"+'"total":'+"*")){
+            $Global:followcounts[(((get-date -Uformat %s) -split ",")[0])] = (((($webquery.responseText) -split ",")[0]) -split ":")[1]
         }
     }
 
@@ -529,12 +550,12 @@ function init_botdefinition {
     
     # Prepare Webrequest
     $url = ("https://api.twitchinsights.net/v1/bots/all")
-	$webquery = New-Object -ComObject "Msxml2.ServerXMLHTTP.6.0"
+    $webquery = New-Object -ComObject "Msxml2.ServerXMLHTTP.6.0"
     $webquery.SetOption(2, 'objHTTP.GetOption(2) - SXH_SERVER_CERT_IGNORE_ALL_SERVER_ERRORS')
     $webquery.open('GET', $url, $false)
-	$webquery.SetRequestHeader("Pragma", "no-cache")
-	$webquery.SetRequestHeader("Cache-Control", "no-cache")
-	$webquery.SetRequestHeader("If-Modified-Since", "Sat, 1 Jan 2000 00:00:00 GMT")
+    $webquery.SetRequestHeader("Pragma", "no-cache")
+    $webquery.SetRequestHeader("Cache-Control", "no-cache")
+    $webquery.SetRequestHeader("If-Modified-Since", "Sat, 1 Jan 2000 00:00:00 GMT")
     [long]$timeout = 10000
     $webquery.SetTimeouts($timeout,$timeout,$timeout,$timeout)
     $webquery.send()
@@ -621,16 +642,36 @@ function init_detector {
         }
     }
 
-
-    # Commence action if bad guy has been detected
-    if($bot -eq $true){
-        write-host ("Follower "+$Global:latestfollow+" looks like a bad guy!") -ForegroundColor Yellow
-        keypress 
-	    write-host ("Wait "+$Global:release+" seconds for release") -ForegroundColor Cyan
-        sleep($Global:release)
-        keypress
+    # Check followercount
+    if($bot -eq $false -and $Global:followcounts.count -ge 1) {
+        $oldestkey = @($Global:followcounts.keys)[$Global:followcounts.count - 1]
+        $newestkey = @($Global:followcounts.keys)[0]
+        $difference = $Global:followcounts[$newestkey] - $Global:followcounts[$oldestkey]
+        if($difference -gt $Global:maxfollowsatonce) {
+            $massfollows = $true
+        }
     }
 
+    # Commence action if bad guy or mass follows has been detected
+    if($bot -eq $true -or $massfollows -eq $true){
+
+        # Output to console
+        if($bot -eq $true){
+            write-host ("Follower "+$Global:latestfollow+" looks like a bad guy!") -ForegroundColor Yellow
+        }
+        else {
+            write-host ("Mass Follows ("+($Global:followcounts[$oldestkey])+" to "+($Global:followcounts[$newestkey])+") detected!") -ForegroundColor Yellow
+        }
+
+        # Press hotkey and wait
+        keypress 
+        write-host ("Wait "+$Global:release+" seconds for release") -ForegroundColor Cyan
+        sleep($Global:release)
+        keypress
+
+        # Clear current followercount
+        $Global:followcounts = @{}
+    }
     
     write-host ""
 }
