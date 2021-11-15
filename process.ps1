@@ -13,10 +13,10 @@ $webserverport     = "8085"                        # Local port for temporarly w
 $webserverwait     = 120                           # Seconds; How long should the webserver listen for an oauth request
 $interval          = 2                             # Time between requests to twitch for checking the lastest follower
 $filterbots        = 10                            # Bots must be active in the last x days
-$pattern           = @()                           # Do not modify
-$pattern          += ".*(H|h)(o|0|O).*(s|S){2}.*"  # Regular expression of a bad follower
 $maxfollowsatonce  = 5                             # Limit max follows in the range of $maxfollowsintime minutes (eg. max 5 follows in the last 10 minutes)
 $maxfollowsintime  = 3                             # Defines the timerange in minutes for $maxfolloswatonce
+$pattern           = @()                           # Do not modify
+$pattern          += ".*(H|h)(o|0|O).*(s|S){2}.*"  # Regular expression of a bad follower
 
 
 # Runtime vars - Modified by the process - Should you NOT edit
