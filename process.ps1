@@ -1,6 +1,6 @@
 #
 # AntiBotAlert by LetsBash.de
-# 26.09.2021
+# 15.11.2021
 # --------------------
 # Function: Makes Bot Follower silent by automaticly pressing a hotkey
 # Works best with OBS & Streamlabs
